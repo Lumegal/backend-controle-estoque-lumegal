@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -13,20 +13,25 @@ import { SuprimentoModule } from './suprimento/suprimento.module';
 import { EntradaSaidaSuprimentoModule } from './entrada-saida-suprimento/entrada-saida-suprimento.module';
 import { EntradaSaidaEpiModule } from './entrada-saida-epi/entrada-saida-epi.module';
 import { AuthModule } from './auth/auth.module';
+import { join } from 'path';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }), // Carrega as variáveis do .env automaticamente
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      url: process.env.DB_URL,
-      synchronize: false, // Não usar true em produção
-      host: process.env.DB_HOST,
-      port: 6543,
-      database: process.env.DB_NAME,
-      username: process.env.DB_USER,
-      password: process.env.DB_PASS, // A senha do Supabase
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.get('DB_HOST'),
+        port: +configService.get('DB_PORT'),
+        username: configService.get('DB_USERNAME'),
+        password: configService.get('DB_PASSWORD'),
+        database: configService.get('DB_NAME'),
+        entities: [join(process.cwd(), 'dist/**/*.entity.js')],
+        // Não use synchronize: true em produção
+        synchronize: true,
+      }),
     }),
     UsuarioModule,
     EpiModule,
