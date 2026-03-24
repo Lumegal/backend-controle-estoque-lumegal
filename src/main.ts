@@ -12,8 +12,12 @@ async function bootstrap() {
     }),
   );
   app.enableCors();
+
+  const PORT = 3000
   
-  await app.listen(3000);
+  await app.listen(PORT, '0.0.0.0');
+  const url = await app.getUrl();
+  console.log(`Controle de Estoque rodando em: ${url}`);
 }
 
 bootstrap();
