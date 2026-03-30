@@ -5,12 +5,11 @@ import { Fornecedor } from './entities/fornecedor.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CategoriaFornecedor } from 'src/categoria-fornecedor/entities/categoria-fornecedor.entity';
 import { Endereco } from 'src/endereco/entities/endereco.entity';
-import { Epi } from 'src/epi/entities/epi.entity';
-import { Suprimento } from 'src/suprimento/entities/suprimento.entity';
+import { Item } from 'src/item/entities/item.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Fornecedor, Endereco, CategoriaFornecedor, Epi, Suprimento]),
+    TypeOrmModule.forFeature([Fornecedor, Endereco, CategoriaFornecedor, Item]),
   ],
   controllers: [FornecedorController],
   providers: [FornecedorService],

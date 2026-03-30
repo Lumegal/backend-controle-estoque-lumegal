@@ -8,8 +8,7 @@ import { UpdateFornecedorDto } from './dto/update-fornecedor.dto';
 
 import { Endereco } from '../endereco/entities/endereco.entity';
 import { CategoriaFornecedor } from '../categoria-fornecedor/entities/categoria-fornecedor.entity';
-import { Epi } from '../epi/entities/epi.entity';
-import { Suprimento } from 'src/suprimento/entities/suprimento.entity';
+import { Item } from 'src/item/entities/item.entity';
 
 @Injectable()
 export class FornecedorService {
@@ -23,20 +22,17 @@ export class FornecedorService {
     @InjectRepository(CategoriaFornecedor)
     private categoriaRepository: Repository<CategoriaFornecedor>,
 
-    @InjectRepository(Epi)
-    private epiRepository: Repository<Epi>,
-
-    @InjectRepository(Suprimento)
-    private suprimentoRepository: Repository<Suprimento>,
+    @InjectRepository(Item)
+    private itemRepository: Repository<Item>,
   ) {}
 
-  async create(dto: CreateFornecedorDto): Promise<Fornecedor> {
+  async create(createFornecedorDto: CreateFornecedorDto): Promise<Fornecedor> {
     const enderecos = await this.enderecoRepository.findBy({
-      id: In(dto.enderecos),
+      id: In(createFornecedorDto.enderecos),
     });
 
     const categorias = await this.categoriaRepository.findBy({
-      id: In(dto.categoriasFornecedor),
+      id: In(createFornecedorDto.categoriasFornecedor),
     });
 
     if (!enderecos.length) {
@@ -47,27 +43,22 @@ export class FornecedorService {
       throw new NotFoundException('Nenhuma categoria de fornecedor encontrada');
     }
 
-    const epis = dto.epis?.length
-      ? await this.epiRepository.findBy({ id: In(dto.epis) })
-      : [];
-
-    const suprimentos = dto.suprimentos?.length
-      ? await this.epiRepository.findBy({ id: In(dto.suprimentos) })
+    const itens = createFornecedorDto.itens?.length
+      ? await this.itemRepository.findBy({ id: In(createFornecedorDto.itens) })
       : [];
 
     const fornecedor = this.fornecedorRepository.create({
-      nome: dto.nome,
+      nome: createFornecedorDto.nome,
       enderecos,
       categoriasFornecedor: categorias,
-      epis,
-      suprimentos,
+      itens,
     });
 
     const fornecedorSalvo = await this.fornecedorRepository.save(fornecedor);
 
     const fornecedorCompleto = await this.fornecedorRepository.findOne({
       where: { id: fornecedorSalvo.id },
-      relations: ['enderecos', 'categoriasFornecedor', 'epis', 'suprimentos'],
+      relations: ['enderecos', 'categoriasFornecedor', 'itens'],
     });
 
     if (!fornecedorCompleto) {
@@ -79,14 +70,14 @@ export class FornecedorService {
 
   async findAll(): Promise<Fornecedor[]> {
     return await this.fornecedorRepository.find({
-      relations: ['enderecos', 'categoriasFornecedor', 'epis', 'suprimentos'],
+      relations: ['enderecos', 'categoriasFornecedor', 'itens'],
     });
   }
 
   async findOne(id: number): Promise<Fornecedor> {
     const fornecedor = await this.fornecedorRepository.findOne({
       where: { id },
-      relations: ['enderecos', 'categoriasFornecedor', 'epis', 'suprimentos'],
+      relations: ['enderecos', 'categoriasFornecedor', 'itens'],
     });
 
     if (!fornecedor) {
@@ -99,7 +90,7 @@ export class FornecedorService {
   async findOnePorNome(nome: string): Promise<Fornecedor> {
     const fornecedor = await this.fornecedorRepository.findOne({
       where: { nome },
-      relations: ['enderecos', 'categoriasFornecedor', 'epis', 'suprimentos'],
+      relations: ['enderecos', 'categoriasFornecedor', 'itens'],
     });
 
     if (!fornecedor) {
@@ -111,17 +102,17 @@ export class FornecedorService {
 
   async update(
     nomeOriginal: string,
-    dto: UpdateFornecedorDto,
+    updateFornecedorDto: UpdateFornecedorDto,
   ): Promise<Fornecedor> {
     const fornecedor = await this.findOnePorNome(nomeOriginal);
 
-    if (dto.nome) {
-      fornecedor.nome = dto.nome;
+    if (updateFornecedorDto.nome) {
+      fornecedor.nome = updateFornecedorDto.nome;
     }
 
-    if (dto.enderecos) {
+    if (updateFornecedorDto.enderecos) {
       const enderecos = await this.enderecoRepository.findBy({
-        id: In(dto.enderecos),
+        id: In(updateFornecedorDto.enderecos),
       });
       if (!enderecos.length) {
         throw new NotFoundException('Enderecos não encontrados');
@@ -129,9 +120,9 @@ export class FornecedorService {
       fornecedor.enderecos = enderecos;
     }
 
-    if (dto.categoriasFornecedor) {
+    if (updateFornecedorDto.categoriasFornecedor) {
       const categorias = await this.categoriaRepository.findBy({
-        id: In(dto.categoriasFornecedor),
+        id: In(updateFornecedorDto.categoriasFornecedor),
       });
       if (!categorias.length) {
         throw new NotFoundException('Categorias não encontradas');
@@ -139,18 +130,11 @@ export class FornecedorService {
       fornecedor.categoriasFornecedor = categorias;
     }
 
-    if (dto.epis) {
-      const epis = await this.epiRepository.findBy({
-        id: In(dto.epis),
+    if (updateFornecedorDto.itens) {
+      const itens = await this.itemRepository.findBy({
+        id: In(updateFornecedorDto.itens),
       });
-      fornecedor.epis = epis;
-    }
-
-    if (dto.suprimentos) {
-      const suprimentos = await this.suprimentoRepository.findBy({
-        id: In(dto.suprimentos),
-      });
-      fornecedor.suprimentos = suprimentos;
+      fornecedor.itens = itens;
     }
 
     return await this.fornecedorRepository.save(fornecedor);

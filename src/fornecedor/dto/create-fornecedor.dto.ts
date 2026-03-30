@@ -25,10 +25,5 @@ export class CreateFornecedorDto {
   @IsOptional()
   @IsArray()
   @IsNumber({}, { each: true })
-  epis?: number[];
-
-  @IsOptional()
-  @IsArray()
-  @IsNumber({}, { each: true })
-  suprimentos?: number[];
+  itens?: number[];
 }

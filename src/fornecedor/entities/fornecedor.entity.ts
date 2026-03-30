@@ -5,10 +5,9 @@ import {
   ManyToMany,
   JoinTable,
 } from 'typeorm';
-import { Epi } from '../../epi/entities/epi.entity';
 import { CategoriaFornecedor } from 'src/categoria-fornecedor/entities/categoria-fornecedor.entity';
 import { Endereco } from 'src/endereco/entities/endereco.entity';
-import { Suprimento } from 'src/suprimento/entities/suprimento.entity';
+import { Item } from 'src/item/entities/item.entity';
 
 @Entity()
 export class Fornecedor {
@@ -22,11 +21,8 @@ export class Fornecedor {
   @JoinTable()
   enderecos: Endereco[];
 
-  @ManyToMany(() => Epi, (epi) => epi.fornecedores)
-  epis: Epi[];
-
-  @ManyToMany(() => Suprimento, (suprimento) => suprimento.fornecedores)
-  suprimentos: Suprimento[];
+  @ManyToMany(() => Item, (item) => item.fornecedores)
+  itens: Item[];
 
   @ManyToMany(() => CategoriaFornecedor, (categoria) => categoria.fornecedores, {
     eager: true, // carrega automaticamente as categorias
