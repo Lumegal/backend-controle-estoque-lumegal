@@ -16,8 +16,8 @@ export class TipoItemService {
     return this.tipoItemRepository.save(tipoItem);
   }
 
-  findAll() {
-    return `This action returns all tipoItem`;
+  async findAll(): Promise<TipoItem[]> {
+    return this.tipoItemRepository.find();
   }
 
   findOne(id: number) {
