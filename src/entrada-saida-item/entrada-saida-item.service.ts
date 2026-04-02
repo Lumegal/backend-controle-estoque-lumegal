@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { EntradaSaidaItem } from './entities/entrada-saida-epi.entity';
+import { EntradaSaidaItem } from './entities/entrada-saida-item.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, Repository } from 'typeorm';
+import { Between, In, Repository } from 'typeorm';
 import { CreateEntradaSaidaItemDto } from './dto/create-entrada-saida-item.dto';
 import { UpdateEntradaSaidaItemDto } from './dto/update-entrada-saida-item.dto';
 
@@ -17,15 +17,21 @@ export class EntradaSaidaItemService {
     const dadosComData = createEntradaSaidaItemDto.map((item) => ({
       ...item,
       data: horario, // sobrescreve ou define a data
-      item: { id: item.idItem },
+      itemId: { id: item.itemId },
     }));
 
     const salvos = await this.entradaSaidaItemRepository.save(dadosComData);
-    return salvos;
+
+    return this.entradaSaidaItemRepository.find({
+      where: {
+        id: In(salvos.map((s) => s.id)),
+      },
+      relations: ['itemId'],
+    });
   }
 
   findAll() {
-    return `This action returns all entradaSaida`;
+    return this.entradaSaidaItemRepository.find({ relations: ['itemId'] });
   }
 
   async findRelatorio(
@@ -44,7 +50,10 @@ export class EntradaSaidaItemService {
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} entradaSaida`;
+    return this.entradaSaidaItemRepository.find({
+      where: { id },
+      relations: ['itemId'],
+    });
   }
 
   update(id: number, updateEntradaSaidaItemDto: UpdateEntradaSaidaItemDto) {

@@ -13,6 +13,7 @@ import { join } from 'path';
 import { TipoItemModule } from './tipo-item/tipo-item.module';
 import { ItemModule } from './item/item.module';
 import { EntradaSaidaItemModule } from './entrada-saida-item/entrada-saida-item.module';
+import { GatewayModule } from './gateway/gateway.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { EntradaSaidaItemModule } from './entrada-saida-item/entrada-saida-item.
     EnderecoModule,
     AuthModule,
     TipoItemModule,
+    GatewayModule,
   ],
   controllers: [AppController],
   providers: [AppService],

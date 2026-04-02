@@ -9,12 +9,15 @@ import { Repository } from 'typeorm';
 import { TipoUnidade } from './entities/tipo-unidade.entity';
 import { CreateTipoUnidadeDto } from './dto/create-tipo-unidade.dto';
 import { UpdateTipoUnidadeDto } from './dto/update-tipo-unidade.dto';
+import { MyGateway } from 'src/gateway/gateway';
 
 @Injectable()
 export class TipoUnidadeService {
   constructor(
     @InjectRepository(TipoUnidade)
     private tipoUnidadeRepository: Repository<TipoUnidade>,
+
+    private readonly gateway: MyGateway,
   ) {}
 
   async create(
@@ -31,6 +34,7 @@ export class TipoUnidadeService {
 
       const nova = this.tipoUnidadeRepository.create(createTipoUnidadeDto);
       const salvo = await this.tipoUnidadeRepository.save(nova);
+      this.gateway.emitirRegistroAtualizado(salvo);
       return salvo;
     } catch (error) {
       if (error.code === '23505') {

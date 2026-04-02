@@ -2,7 +2,7 @@ import { IsDefined, IsNumber } from 'class-validator';
 
 export class CreateEntradaSaidaItemDto {
   @IsNumber()
-  idItem: number;
+  itemId: number;
 
   @IsNumber()
   @IsDefined({ message: 'Quantidade é obrigatória' })

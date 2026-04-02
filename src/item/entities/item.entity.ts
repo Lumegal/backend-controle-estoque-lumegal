@@ -1,4 +1,4 @@
-import { EntradaSaidaItem } from 'src/entrada-saida-item/entities/entrada-saida-epi.entity';
+import { EntradaSaidaItem } from 'src/entrada-saida-item/entities/entrada-saida-item.entity';
 import { Fornecedor } from 'src/fornecedor/entities/fornecedor.entity';
 import { TipoItem } from 'src/tipo-item/entities/tipo-item.entity';
 import { TipoUnidade } from 'src/tipo-unidade/entities/tipo-unidade.entity';
@@ -56,7 +56,7 @@ export class Item {
 
   @OneToMany(
     () => EntradaSaidaItem,
-    (entradaSaidaItem) => entradaSaidaItem.item,
+    (entradaSaidaItem) => entradaSaidaItem.itemId,
   )
   entradasSaidasItem: EntradaSaidaItem[];
 }

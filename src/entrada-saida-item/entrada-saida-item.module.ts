@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { EntradaSaidaItemService } from './entrada-saida-item.service';
 import { EntradaSaidaItemController } from './entrada-saida-item.controller';
-import { EntradaSaidaItem } from './entities/entrada-saida-epi.entity';
+import { EntradaSaidaItem } from './entities/entrada-saida-item.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({

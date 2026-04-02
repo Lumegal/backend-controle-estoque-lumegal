@@ -12,9 +12,11 @@ export class EntradaSaidaItem {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Item, (item) => item.entradasSaidasItem)
+  @ManyToOne(() => Item, (item) => item.entradasSaidasItem, {
+    eager: true,
+  })
   @JoinColumn()
-  item: Item;
+  itemId: Item;
 
   @Column()
   quantidade: number;

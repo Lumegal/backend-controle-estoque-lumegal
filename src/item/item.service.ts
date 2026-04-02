@@ -14,6 +14,7 @@ import { UpdateQuantidadeItemDto } from './dto/update-quantidade-item.dto';
 import { TipoUnidade } from '../tipo-unidade/entities/tipo-unidade.entity';
 import { Fornecedor } from '../fornecedor/entities/fornecedor.entity';
 import { TipoItem } from 'src/tipo-item/entities/tipo-item.entity';
+import { MyGateway } from 'src/gateway/gateway';
 
 @Injectable()
 export class ItemService {
@@ -29,6 +30,8 @@ export class ItemService {
 
     @InjectRepository(Fornecedor)
     private fornecedorRepository: Repository<Fornecedor>,
+
+    private readonly gateway: MyGateway,
   ) {}
 
   async create(createItemDto: CreateItemDto): Promise<Item> {
@@ -58,7 +61,9 @@ export class ItemService {
     }
 
     const fornecedores = createItemDto.fornecedores?.length
-      ? await this.fornecedorRepository.findBy({ id: In(createItemDto.fornecedores) })
+      ? await this.fornecedorRepository.findBy({
+          id: In(createItemDto.fornecedores),
+        })
       : [];
 
     const novoItem = this.itemRepository.create({
@@ -75,6 +80,8 @@ export class ItemService {
     });
 
     const salvo = await this.itemRepository.save(novoItem);
+
+    this.gateway.emitirItemAtualizado(salvo);
     return salvo;
   }
 
@@ -154,18 +161,19 @@ export class ItemService {
     movimentacoes: UpdateQuantidadeItemDto[],
   ): Promise<Item[]> {
     const resultados: Item[] = [];
-
     for (const mov of movimentacoes) {
-      const epi = await this.itemRepository.findOneBy({
-        id: mov.id,
+      const item = await this.itemRepository.findOneBy({
+        id: mov.itemId,
       });
 
-      if (!epi) continue;
+      if (!item) continue;
 
-      epi.quantidade += mov.quantidade;
-      const salvo = await this.itemRepository.save(epi);
+      item.quantidade += mov.quantidade;
+      const salvo = await this.itemRepository.save(item);
       resultados.push(salvo);
     }
+
+    this.gateway.emitirItemAtualizado(resultados);
 
     return resultados;
   }

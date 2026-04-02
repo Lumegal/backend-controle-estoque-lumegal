@@ -9,6 +9,7 @@ import { UpdateFornecedorDto } from './dto/update-fornecedor.dto';
 import { Endereco } from '../endereco/entities/endereco.entity';
 import { CategoriaFornecedor } from '../categoria-fornecedor/entities/categoria-fornecedor.entity';
 import { Item } from 'src/item/entities/item.entity';
+import { MyGateway } from 'src/gateway/gateway';
 
 @Injectable()
 export class FornecedorService {
@@ -24,6 +25,8 @@ export class FornecedorService {
 
     @InjectRepository(Item)
     private itemRepository: Repository<Item>,
+
+    private readonly gateway: MyGateway,
   ) {}
 
   async create(createFornecedorDto: CreateFornecedorDto): Promise<Fornecedor> {
@@ -55,6 +58,7 @@ export class FornecedorService {
     });
 
     const fornecedorSalvo = await this.fornecedorRepository.save(fornecedor);
+    this.gateway.emitirRegistroAtualizado(fornecedorSalvo);
 
     const fornecedorCompleto = await this.fornecedorRepository.findOne({
       where: { id: fornecedorSalvo.id },

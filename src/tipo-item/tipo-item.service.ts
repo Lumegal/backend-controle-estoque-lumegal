@@ -4,16 +4,21 @@ import { UpdateTipoItemDto } from './dto/update-tipo-item.dto';
 import { TipoItem } from './entities/tipo-item.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { MyGateway } from 'src/gateway/gateway';
 
 @Injectable()
 export class TipoItemService {
   constructor(
     @InjectRepository(TipoItem)
     private tipoItemRepository: Repository<TipoItem>,
+
+    private readonly gateway: MyGateway,
   ) {}
-  create(createTipoItemDto: CreateTipoItemDto) {
+  async create(createTipoItemDto: CreateTipoItemDto) {
     const tipoItem = this.tipoItemRepository.create(createTipoItemDto);
-    return this.tipoItemRepository.save(tipoItem);
+    const tipoItemSalvo = await this.tipoItemRepository.save(tipoItem)
+    this.gateway.emitirRegistroAtualizado(tipoItemSalvo);
+    return tipoItemSalvo;
   }
 
   async findAll(): Promise<TipoItem[]> {
