@@ -56,7 +56,7 @@ export class Item {
 
   @OneToMany(
     () => EntradaSaidaItem,
-    (entradaSaidaItem) => entradaSaidaItem.itemId,
+    (entradaSaidaItem) => entradaSaidaItem.item,
   )
   entradasSaidasItem: EntradaSaidaItem[];
 }

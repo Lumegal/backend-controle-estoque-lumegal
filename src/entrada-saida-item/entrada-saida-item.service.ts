@@ -17,7 +17,7 @@ export class EntradaSaidaItemService {
     const dadosComData = createEntradaSaidaItemDto.map((item) => ({
       ...item,
       data: horario, // sobrescreve ou define a data
-      itemId: { id: item.itemId },
+      item: { id: item.itemId },
     }));
 
     const salvos = await this.entradaSaidaItemRepository.save(dadosComData);
@@ -26,12 +26,14 @@ export class EntradaSaidaItemService {
       where: {
         id: In(salvos.map((s) => s.id)),
       },
-      relations: ['itemId'],
+      relations: ['item'],
     });
   }
 
-  findAll() {
-    return this.entradaSaidaItemRepository.find({ relations: ['itemId'] });
+  async findAll() {
+    return await this.entradaSaidaItemRepository.find({
+      relations: ['item'],
+    });
   }
 
   async findRelatorio(
@@ -49,10 +51,10 @@ export class EntradaSaidaItemService {
     });
   }
 
-  findOne(id: number) {
-    return this.entradaSaidaItemRepository.find({
+  async findOne(id: number) {
+    return await this.entradaSaidaItemRepository.find({
       where: { id },
-      relations: ['itemId'],
+      relations: ['item'],
     });
   }
 

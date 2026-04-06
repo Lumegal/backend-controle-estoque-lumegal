@@ -16,7 +16,7 @@ export class EntradaSaidaItem {
     eager: true,
   })
   @JoinColumn()
-  itemId: Item;
+  item: Item;
 
   @Column()
   quantidade: number;
